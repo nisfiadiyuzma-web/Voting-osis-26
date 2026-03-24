@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Voting OSIS</title>
+</head>
+<body style="text-align:center; font-family:Arial;">
+
+<h2>Voting Ketua OSIS</h2>
+<p>Pilih kandidat:</p>
+
+<button onclick="vote('riski')">Riski</button>
+<button onclick="vote('dewi')">Dewi</button>
+<button onclick="vote('annisa')">Annisa</button>
+
+<h3>Hasil Voting:</h3>
+<p>Riski: <span id="riski">0</span></p>
+<p>Dewi: <span id="dewi">0</span></p>
+<p>Annisa: <span id="annisa">0</span></p>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+// 🔥 CONFIG KAMU
+const firebaseConfig = {
+  apiKey: "AIzaSyDle95wtYJC3MPpjtXvEa9WtxOn7OnKhXY",
+  authDomain: "voting-osis-smpn-26.firebaseapp.com",
+  databaseURL: "https://voting-osis-smpn-26-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "voting-osis-smpn-26",
+  storageBucket: "voting-osis-smpn-26.firebasestorage.app",
+  messagingSenderId: "593165224345",
+  appId: "1:593165224345:web:620aaec25da5cfe6c02b08",
+  measurementId: "G-W7MH9KW80T"
+};
+
+// Init Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// 🔥 VOTE FUNCTION
+window.vote = function(nama) {
+  const voteRef = ref(db, "votes/" + nama);
+  runTransaction(voteRef, (current) => {
+    return (current || 0) + 1;
+  });
+}
+
+// 🔥 REALTIME UPDATE
+const votesRef = ref(db, "votes/");
+onValue(votesRef, (snapshot) => {
+  const data = snapshot.val() || {};
+  document.getElementById("riski").innerText = data.riski || 0;
+  document.getElementById("dewi").innerText = data.dewi || 0;
+  document.getElementById("annisa").innerText = data.annisa || 0;
+});
+</script>
+
+</body>
+</html>
